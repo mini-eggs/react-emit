@@ -1,5 +1,7 @@
 React Emit
 
+`npm install react-emit`
+
 Excerpt from example:
 
 ```javascript
