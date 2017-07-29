@@ -3,16 +3,16 @@ import { render } from "react-dom";
 import { EmitProvider, withEmit } from "react-emit";
 
 class TestOne extends React.Component {
-  state = { message: undefined };
-
-  componentWillMount() {
-    this.props.on("test", this.handleEvent);
+  constructor(props) {
+    super(props);
+    this.state = { message: undefined };
   }
-
-  handleEvent = ({ message }) => {
+  componentWillMount() {
+    this.props.on("test", h => this.handleEvent(h));
+  }
+  handleEvent({ message }) {
     this.setState(() => ({ message }));
-  };
-
+  }
   render() {
     const { message } = this.state;
     const displayMessage = message ? message : "No message.";
@@ -29,21 +29,21 @@ class TestOne extends React.Component {
 const TestOneEmit = withEmit(TestOne);
 
 class TestTwo extends React.Component {
-  handleClick = () => {
+  handleClick() {
     this.props.emit("test", { message: "Success." });
-  };
+  }
   render() {
     return (
       <div>
         <div>Component two</div>
-        <button onClick={this.handleClick}>Emit event</button>
+        <button onClick={() => this.handleClick()}>trigger emit event</button>
       </div>
     );
   }
 }
 const TestTwoEmit = withEmit(TestTwo);
 
-function App() {
+function Example() {
   return (
     <EmitProvider>
       <div>
@@ -54,4 +54,4 @@ function App() {
   );
 }
 
-render(<App />, document.getElementById("root"));
+render(<Example />, document.getElementById("root"));
