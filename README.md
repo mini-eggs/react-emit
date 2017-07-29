@@ -43,7 +43,9 @@ class TestTwo extends React.Component {
     return (
       <div>
         <div>Component two</div>
-        <button onClick={() => this.handleClick()}>trigger emit event</button>
+        <button onClick={() => this.handleClick()}>
+          trigger emit event
+        </button>
       </div>
     );
   }

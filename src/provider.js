@@ -1,18 +1,33 @@
 import { Component } from "react";
 import PropTypes from "prop-types";
+import CustomEvent from "custom-event";
 
 function addEvent(name, handle) {
   return ({ events }) => {
-    const nextEvents = events;
-    nextEvents[name] = handle;
-    return { events: nextEvents };
+    if (Array.isArray(events[name])) {
+      events[name].push(handle);
+    } else {
+      events[name] = [handle];
+    }
+    return { events };
+  };
+}
+
+function callEvent(handlers) {
+  return ({ detail }) => {
+    if (Array.isArray(handlers)) {
+      handlers.forEach(handle => handle(detail));
+    }
   };
 }
 
 class EmitProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { events: {} };
+    this.state = {
+      events: {},
+      element: props.element || window
+    };
   }
 
   getChildContext() {
@@ -23,10 +38,12 @@ class EmitProvider extends Component {
   }
 
   emit(name, props) {
-    const handle = this.state.events[name];
-    if (typeof handle === "function") {
-      handle(props);
-    }
+    const element = this.state.element;
+    const handle = callEvent(this.state.events[name]);
+    const event = new CustomEvent(name, { detail: props });
+    element.addEventListener(name, handle);
+    element.dispatchEvent(event);
+    element.removeEventListener(name, handle);
   }
 
   on(name, handle) {
