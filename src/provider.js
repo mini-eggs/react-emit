@@ -1,27 +1,28 @@
-import { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import CustomEvent from "custom-event";
 
-function addEvent(name, handle) {
-  return ({ events }) => {
-    if (Array.isArray(events[name])) {
-      events[name].push(handle);
-    } else {
-      events[name] = [handle];
-    }
-    return { events };
-  };
-}
+const addEvent = (key, handle) => ({ events }) => ({
+  events: {
+    ...events,
+    [key]: [...(events[key] || []), handle]
+  }
+});
 
-function callEvent(handlers) {
-  return ({ detail }) => {
-    if (Array.isArray(handlers)) {
-      handlers.forEach(handle => handle(detail));
-    }
-  };
-}
+const removeEvent = (key, handle) => ({ events }) => ({
+  events: Object.keys(events).reduce(
+    (total, currentKey) =>
+      currentKey === key && handle === events[key]
+        ? { ...total }
+        : { ...total, [key]: events[key] },
+    {}
+  )
+});
 
-class EmitProvider extends Component {
+const callEvent = (handlers = []) => ({ detail }) =>
+  handlers.forEach(handle => handle(detail));
+
+class EmitProvider extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,10 +32,10 @@ class EmitProvider extends Component {
   }
 
   getChildContext() {
-    return {
-      emit: (name, props) => this.emit(name, props),
-      on: (name, handle) => this.on(name, handle)
-    };
+    const emit = (name, props) => this.emit(name, props);
+    const on = (name, handle) => this.on(name, handle);
+    const off = (name, handle) => this.off(name, handle);
+    return { emit, on, off };
   }
 
   emit(name, props) {
@@ -50,14 +51,19 @@ class EmitProvider extends Component {
     this.setState(addEvent(name, handle));
   }
 
+  off(name, handle) {
+    this.setState(removeEvent(name, handle));
+  }
+
   render() {
-    return this.props.children;
+    return React.createElement(React.Fragment, null, this.props.children);
   }
 }
 
 EmitProvider.childContextTypes = {
   emit: PropTypes.func.isRequired,
-  on: PropTypes.func.isRequired
+  on: PropTypes.func.isRequired,
+  off: PropTypes.func.isRequired
 };
 
 export default EmitProvider;
