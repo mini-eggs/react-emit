@@ -1,5 +1,36 @@
 React Emit
 
+#### Why
+
+I love using Vue's event bus. $emit, $on, and $off are very powerful.
+
+I want this for React.
+
+Now you can use Vue's same idea in React with this package's `withEmit` higher-order function. It's as simple as:
+
+```javascript
+class MyCoolComponent extends React.Component {
+  componentDidMount() {
+    this.on("SomeButton:clicked", data => {
+      // Our message is available here!
+      // Normally you will create this `on` in a different component.
+      alert(data.message);
+    });
+  }
+
+  handleClick() {
+    const data = { message: "Some data you wish to pass." };
+    this.emit("SomeButton:clicked", data);
+  }
+
+  render() {
+    return <button onClick={() => this.handleClick()}>Click to Emit</button>;
+  }
+}
+
+export default withEmit(MyCoolComponent);
+```
+
 #### Installation
 
 `npm install --save react-emit`
