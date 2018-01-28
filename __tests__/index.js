@@ -10,7 +10,9 @@ const EmitTestType = "EmitTestType";
  */
 class EmitComponent extends React.Component {
   handleClick() {
-    this.props.emit(EmitTestType, { title: "=D Count: " });
+    this.props.emit(this.props.emitName || EmitTestType, {
+      title: "=D Count: "
+    });
   }
 
   render() {
@@ -34,11 +36,11 @@ class CatchComponent extends React.Component {
   }
 
   componentDidMount() {
-    this.props.on(EmitTestType, this.increment);
+    this.props.on(this.props.emitName || EmitTestType, this.increment);
   }
 
   stopListening() {
-    this.props.off(EmitTestType, this.increment);
+    this.props.off(this.props.emitName || EmitTestType, this.increment);
   }
 
   render() {
@@ -159,5 +161,44 @@ describe("Ensure events are passed correctly.", () => {
 
     expect(catcherOne.instance.state.count).toBe(1);
     expect(catcherTwo.instance.state.count).toBe(2);
+  });
+
+  it("Unrelated emits do not interfere with eachother", () => {
+    const app = render(
+      <EmitProvider>
+        <EmitComponentConnected />
+        <EmitComponentConnected emitName="bogusEvent" />
+        <CatchComponentConnected />
+      </EmitProvider>
+    );
+
+    const emitterOne = app.root.findAllByType(EmitComponent).shift();
+    const emitterTwo = app.root.findAllByType(EmitComponent).pop();
+    const catcher = app.root.findByType(CatchComponent);
+
+    emitterTwo.instance.handleClick();
+    expect(catcher.instance.state.count).toBe(0);
+
+    emitterOne.instance.handleClick();
+    expect(catcher.instance.state.count).toBe(1);
+  });
+
+  it("Unrelated handlers do not interfere with eachother", () => {
+    const app = render(
+      <EmitProvider>
+        <EmitComponentConnected />
+        <CatchComponentConnected />
+        <CatchComponentConnected emitName="bogusEvent" />
+      </EmitProvider>
+    );
+
+    const emitter = app.root.findByType(EmitComponent);
+    const catcherOne = app.root.findAllByType(CatchComponent).shift();
+    const catcherTwo = app.root.findAllByType(CatchComponent).pop();
+
+    emitter.instance.handleClick();
+
+    expect(catcherOne.instance.state.count).toBe(1);
+    expect(catcherTwo.instance.state.count).toBe(0);
   });
 });

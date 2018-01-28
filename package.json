@@ -4,7 +4,7 @@
   "main": "./build/main.js",
   "scripts": {
     "build": "backpack build",
-    "test": "npm run build && jest"
+    "test": "npm run build && jest --watchAll"
   },
   "files": ["build/main.js"],
   "author": "Evan Jones <evanjones4040@gmail.com> (https://evanjon.es/)",
