@@ -2,25 +2,40 @@ import React from "react";
 import PropTypes from "prop-types";
 import CustomEvent from "custom-event";
 
-const addEvent = (key, handle) => ({ events }) => ({
-  events: {
-    ...events,
-    [key]: [...(events[key] || []), handle]
+const addEvent = (key, handle) => ({ events }) => {
+  const nextEvents = { ...events };
+
+  const currentHandles = events[key] || [];
+  nextEvents[key] = [...currentHandles, handle];
+
+  return { events: nextEvents };
+};
+
+const removeEvent = (key, handle) => ({ events }) => {
+  const nextEvents = {};
+
+  for (const currentKey in events) {
+    if (currentKey === key) {
+      const nextHandles = [];
+
+      for (const currentHandle of events[currentKey]) {
+        if (currentHandle !== handle) {
+          nextHandles.push(currentHandle);
+        }
+      }
+
+      nextEvents[currentKey] = nextHandles;
+    }
   }
-});
 
-const removeEvent = (key, handle) => ({ events }) => ({
-  events: Object.keys(events).reduce(
-    (total, currentKey) =>
-      currentKey === key && handle === events[key]
-        ? { ...total }
-        : { ...total, [key]: events[key] },
-    {}
-  )
-});
+  return { events: nextEvents };
+};
 
-const callEvent = (handlers = []) => ({ detail }) =>
-  handlers.forEach(handle => handle(detail));
+const callEvent = (handlers = []) => ({ detail }) => {
+  for (const handle of handlers) {
+    handle(detail);
+  }
+};
 
 class EmitProvider extends React.Component {
   constructor(props) {

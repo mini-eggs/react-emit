@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Ensure events are passed correctly. Test app mounts fine. 1`] = `
+Array [
+  <button
+    onClick={[Function]}
+  >
+    Emit
+  </button>,
+  <span>
+    Count: 
+    : 
+    0
+  </span>,
+]
+`;

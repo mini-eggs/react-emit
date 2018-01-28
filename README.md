@@ -11,7 +11,7 @@ Now you can use Vue's same idea in React with this package's `withEmit` higher-o
 ```javascript
 class MyCoolComponent extends React.Component {
   componentDidMount() {
-    this.on("SomeButton:clicked", data => {
+    this.props.on("SomeButton:clicked", data => {
       // Our message is available here!
       // Normally you will create this `on` in a different component.
       alert(data.message);
@@ -20,7 +20,7 @@ class MyCoolComponent extends React.Component {
 
   handleClick() {
     const data = { message: "Some data you wish to pass." };
-    this.emit("SomeButton:clicked", data);
+    this.props.emit("SomeButton:clicked", data);
   }
 
   render() {
