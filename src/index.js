@@ -1,4 +1,4 @@
-import withEmit from "./connect";
-import EmitProvider from "./provider";
+import Provider from "./provider";
+import Consumer from "./consumer";
 
-export { withEmit, EmitProvider };
+export { Provider, Consumer };

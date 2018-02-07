@@ -6,7 +6,9 @@
     "build": "backpack build",
     "test": "npm run build && jest --watchAll"
   },
-  "files": ["build/main.js"],
+  "files": [
+    "build/main.js"
+  ],
   "author": "Evan Jones <evanjones4040@gmail.com> (https://evanjon.es/)",
   "license": "MIT",
   "devDependencies": {
@@ -14,16 +16,15 @@
     "babel-preset-react": "^6.24.1",
     "backpack-core": "^0.5.0",
     "jest": "^22.1.4",
-    "react-dom": "^16.2.0",
-    "react-test-renderer": "^16.2.0"
+    "react": "^16.3.0-alpha.0",
+    "react-dom": "^16.3.0-alpha.0",
+    "react-test-renderer": "^16.3.0-alpha.0"
   },
   "dependencies": {
-    "custom-event": "^1.0.1",
-    "prop-types": "^15.6.0",
-    "react": "^16.2.0"
+    "custom-event": "^1.0.1"
   },
   "peerDependencies": {
-    "react": "^16.0.0-0"
+    "react": "^16.3.0-alpha.0"
   },
   "bugs": {
     "url": "https://github.com/mini-eggs/react-emit/issues"
@@ -34,6 +35,9 @@
     "url": "https://github.com/mini-eggs/react-emit.git"
   },
   "babel": {
-    "presets": ["env", "react"]
+    "presets": [
+      "env",
+      "react"
+    ]
   }
 }

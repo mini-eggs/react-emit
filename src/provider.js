@@ -1,43 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
-import CustomEvent from "custom-event";
+import Context from "./context";
+import { addEvent, removeEvent, callEvent } from "./constants/functions";
 
-const addEvent = (key, handle) => ({ events }) => {
-  const nextEvents = { ...events };
-
-  const currentHandles = events[key] || [];
-  nextEvents[key] = [...currentHandles, handle];
-
-  return { events: nextEvents };
-};
-
-const removeEvent = (key, handle) => ({ events }) => {
-  const nextEvents = {};
-
-  for (const currentKey in events) {
-    if (currentKey === key) {
-      const nextHandles = [];
-
-      for (const currentHandle of events[currentKey]) {
-        if (currentHandle !== handle) {
-          nextHandles.push(currentHandle);
-        }
-      }
-
-      nextEvents[currentKey] = nextHandles;
-    }
-  }
-
-  return { events: nextEvents };
-};
-
-const callEvent = (handlers = []) => ({ detail }) => {
-  for (const handle of handlers) {
-    handle(detail);
-  }
-};
-
-class EmitProvider extends React.Component {
+class Provider extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,10 +11,10 @@ class EmitProvider extends React.Component {
     };
   }
 
-  getChildContext() {
-    const emit = (name, props) => this.emit(name, props);
-    const on = (name, handle) => this.on(name, handle);
-    const off = (name, handle) => this.off(name, handle);
+  get contextFunctions() {
+    const emit = (key, fn) => this.emit(key, fn);
+    const on = (key, fn) => this.on(key, fn);
+    const off = (key, fn) => this.off(key, fn);
     return { emit, on, off };
   }
 
@@ -71,14 +36,8 @@ class EmitProvider extends React.Component {
   }
 
   render() {
-    return React.createElement(React.Fragment, null, this.props.children);
+    return <Context.Provider value={this.contextFunctions} {...this.props} />;
   }
 }
 
-EmitProvider.childContextTypes = {
-  emit: PropTypes.func.isRequired,
-  on: PropTypes.func.isRequired,
-  off: PropTypes.func.isRequired
-};
-
-export default EmitProvider;
+export default Provider;

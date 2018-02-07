@@ -1,7 +1,7 @@
 import React from "react";
 import { create as render } from "react-test-renderer";
 
-import { EmitProvider, withEmit } from "../";
+import { Provider, Consumer } from "../";
 
 const EmitTestType = "EmitTestType";
 
@@ -20,7 +20,7 @@ class EmitComponent extends React.Component {
   }
 }
 
-const EmitComponentConnected = withEmit(EmitComponent);
+const EmitComponentConnected = Consumer(EmitComponent);
 
 /**
  * Catcher.
@@ -52,16 +52,16 @@ class CatchComponent extends React.Component {
   }
 }
 
-const CatchComponentConnected = withEmit(CatchComponent);
+const CatchComponentConnected = Consumer(CatchComponent);
 
 /**
  * App.
  */
 const App = () => (
-  <EmitProvider>
+  <Provider>
     <EmitComponentConnected />
     <CatchComponentConnected />
-  </EmitProvider>
+  </Provider>
 );
 
 /**
@@ -114,11 +114,11 @@ describe("Ensure events are passed correctly.", () => {
 
   it("Adds events and removes events correctly with multiple emitters.", () => {
     const app = render(
-      <EmitProvider>
+      <Provider>
         <EmitComponentConnected />
         <EmitComponentConnected />
         <CatchComponentConnected />
-      </EmitProvider>
+      </Provider>
     );
 
     const emitterOne = app.root.findAllByType(EmitComponent).shift();
@@ -140,11 +140,11 @@ describe("Ensure events are passed correctly.", () => {
 
   it("Adds events and removes events correctly with multiple listeners.", () => {
     const app = render(
-      <EmitProvider>
+      <Provider>
         <EmitComponentConnected />
         <CatchComponentConnected />
         <CatchComponentConnected />
-      </EmitProvider>
+      </Provider>
     );
 
     const emitter = app.root.findByType(EmitComponent);
@@ -165,11 +165,11 @@ describe("Ensure events are passed correctly.", () => {
 
   it("Unrelated emits do not interfere with eachother", () => {
     const app = render(
-      <EmitProvider>
+      <Provider>
         <EmitComponentConnected />
         <EmitComponentConnected emitName="bogusEvent" />
         <CatchComponentConnected />
-      </EmitProvider>
+      </Provider>
     );
 
     const emitterOne = app.root.findAllByType(EmitComponent).shift();
@@ -185,11 +185,11 @@ describe("Ensure events are passed correctly.", () => {
 
   it("Unrelated handlers do not interfere with eachother", () => {
     const app = render(
-      <EmitProvider>
+      <Provider>
         <EmitComponentConnected />
         <CatchComponentConnected />
         <CatchComponentConnected emitName="bogusEvent" />
-      </EmitProvider>
+      </Provider>
     );
 
     const emitter = app.root.findByType(EmitComponent);
